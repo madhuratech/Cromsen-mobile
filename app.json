@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.cromsen.app",
-      "versionCode": 4,
+      "versionCode": 5,
       "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
@@ -55,8 +55,8 @@
         {
           "android": {
             "kotlinVersion": "2.1.20",
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
             "minSdkVersion": 24
           }
         }

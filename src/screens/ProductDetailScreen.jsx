@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet, Text, View, ScrollView, TouchableOpacity, Image,
   Dimensions, ActivityIndicator, Modal, Platform, StatusBar, FlatList,
-  TextInput, Animated, RefreshControl
+  TextInput, Animated, RefreshControl, Share
 } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
@@ -359,6 +359,24 @@ const [sqFtOpen, setSqFtOpen] = useState(false);
     else setQtyInput(q => q === '1' ? val : q + val);
   };
 
+  // Animations
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const handleShare = async () => {
+    try {
+      if (!product) return;
+      const shareUrl = `https://cromsennest.com/product/${product.slug || product._id || product.id}`;
+      const message = `Check out ${sanitizeData(product.name, 'this product')} on Cromsen!\n\n${shareUrl}`;
+      await Share.share({
+        message,
+        url: shareUrl, // iOS only
+        title: sanitizeData(product.name, 'Product'),
+      });
+    } catch (error) {
+      console.warn("Error sharing product:", error);
+    }
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     await load();
@@ -591,7 +609,7 @@ const [sqFtOpen, setSqFtOpen] = useState(false);
               filled={product && checkWishlisted(product._id || product.id)} 
             />
           </TouchableOpacity>
-          <TouchableOpacity style={[s.fab, { backgroundColor: isDarkMode ? 'rgba(30,41,59,0.9)' : 'rgba(255,255,255,0.9)' }]}>
+          <TouchableOpacity style={[s.fab, { backgroundColor: isDarkMode ? 'rgba(30,41,59,0.9)' : 'rgba(255,255,255,0.9)' }]} onPress={handleShare}>
             <ShareIcon color={theme.text} size={16} />
           </TouchableOpacity>
         </View>

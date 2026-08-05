@@ -1326,7 +1326,7 @@ export default function CheckoutScreen({ navigation, route }) {
                   ) : null}
 
                   <Text style={s.itemPrice}>
-                    {item.sqFt && item.sqFt !== '1' ? `₹${item.price} x ${item.sqFt} sq.ft ` : `₹${item.price} `} 
+                    {item.sqFt && item.sqFt !== '1' && item.sqFt !== 1 ? `₹${item.price}/sq.ft x ${item.sqFt} sq.ft ` : `₹${item.price} `} 
                     (Qty: {item.quantity})
                   </Text>
                 </View>

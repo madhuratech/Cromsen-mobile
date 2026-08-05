@@ -23,10 +23,17 @@ export default function CartItem({ item, onRemove, onIncrease, onDecrease }) {
             <Text style={[styles.reviews, { color: theme.textSecondary }]}>(172 reviews)</Text>
           </View>
           <View style={styles.priceRow}>
-            <Text style={[styles.price, { color: theme.text }]}>₹{item.price}</Text>
+            <Text style={[styles.price, { color: theme.text }]}>
+              {item.sqFt && item.sqFt !== '1' && item.sqFt !== 1 ? `₹${((parseFloat(item.price) || 0) * (parseFloat(item.sqFt) || 1)).toLocaleString()}` : `₹${item.price}`}
+            </Text>
             <Text style={[styles.mrp, { color: theme.textSecondary }]}>₹{discountedMRP}</Text>
             <Text style={[styles.discount, { color: isDarkMode ? '#10B981' : '#27AE60' }]}>{discountPct}% off</Text>
           </View>
+          {item.sqFt && item.sqFt !== '1' && item.sqFt !== 1 && (
+             <Text style={{ fontSize: 11, color: theme.textSecondary, marginTop: 2 }}>
+               (₹{item.price}/sq.ft x {item.sqFt} sq.ft)
+             </Text>
+          )}
         </View>
       </View>
 

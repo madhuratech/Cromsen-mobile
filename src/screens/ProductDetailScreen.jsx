@@ -521,6 +521,32 @@ const [sqFtOpen, setSqFtOpen] = useState(false);
     }
   }
 
+  // Calculate final custom sqFt size
+  let finalSqFtValue = 0;
+  if (product?.isCustomSizeEnabled && sqFtWidth && sqFtHeight) {
+    const w = parseFloat(sqFtWidth) || 0;
+    const h = parseFloat(sqFtHeight) || 0;
+    if (w > 0 && h > 0) {
+      finalSqFtValue = w * h;
+    }
+  }
+
+  let customRate = 0;
+  if (product?.isCustomSizeEnabled) {
+    if (userRole === 'dealer') {
+       customRate = parseNum(product.pricePerSqFtDealer) || parseNum(product.customPricePerSqFtDealer) || parseNum(product.customSqFtPriceDealer) || parseNum(product.dealerCustomSqFtPrice) || parseNum(product.dealerPricePerSqFt) || parseNum(product.customPriceDealer);
+    } 
+    if (!customRate) {
+       customRate = parseNum(product.pricePerSqFtRetail) || parseNum(product.customPricePerSqFtRetail) || parseNum(product.customSqFtPriceRetail) || parseNum(product.retailCustomSqFtPrice) || parseNum(product.retailPricePerSqFt) || parseNum(product.customPricePerSqFt) || parseNum(product.customPriceRetail);
+    }
+  }
+
+  let isCustomSqFtApplied = false;
+  if (product?.isCustomSizeEnabled && finalSqFtValue > 0 && customRate > 0) {
+    price = customRate; 
+    isCustomSqFtApplied = true;
+  }
+
   // Add Installation Fee if required
   const activeFeeCgst = activeTargetVar && activeTargetVar.cgst !== undefined ? activeTargetVar.cgst : product?.cgst;
   const activeFeeSgst = activeTargetVar && activeTargetVar.sgst !== undefined ? activeTargetVar.sgst : product?.sgst;
@@ -762,7 +788,16 @@ const [sqFtOpen, setSqFtOpen] = useState(false);
               </Text>
             </View>
             <View style={s.priceRatingRow}>
-              <Text style={[s.priceTxt, { color: theme.primary }]}>₹{price.toLocaleString()}</Text>
+              <View>
+                <Text style={[s.priceTxt, { color: theme.primary }]}>
+                  ₹{(price * (isCustomSqFtApplied ? finalSqFtValue : 1)).toLocaleString()}
+                </Text>
+                {isCustomSqFtApplied && (
+                  <Text style={{ fontSize: 12, color: theme.textSecondary, textAlign: 'right' }}>
+                    (₹{price}/sq.ft x {finalSqFtValue.toFixed(2)})
+                  </Text>
+                )}
+              </View>
               <View style={[s.ratingChip, { backgroundColor: isDarkMode ? '#064E3B' : '#F0FFF4' }]}>
                 <Text style={[s.ratingTxt, { color: isDarkMode ? '#10B981' : '#22C55E' }]}>★ {rating}</Text>
               </View>
@@ -956,6 +991,11 @@ const [sqFtOpen, setSqFtOpen] = useState(false);
                 <View style={[s.sqFtCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <Text style={[s.sqFtTitle, { color: theme.text }]}>Square Feet (sq.ft)</Text>
                   <Text style={[s.sqFtSubtitle, { color: theme.textSecondary }]}>Enter your custom size</Text>
+                  {customRate > 0 && (
+                    <Text style={{ fontSize: 14, color: theme.primary, fontWeight: '700', marginTop: 4, marginBottom: 8 }}>
+                      Rate: ₹{customRate} / sq.ft
+                    </Text>
+                  )}
 
                   <View style={s.sqFtInputRow}>
                     <View style={s.sqFtInputGroup}>

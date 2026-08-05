@@ -45,7 +45,15 @@ export default function CartScreen({ navigation }) {
             }
             if (!freshProd) return item; // Fallback to cached item if network fails
 
-            let freshPrice = userRole === 'dealer' ? parseNum(freshProd.dealerPrice) : parseNum(freshProd.retailPrice);
+            let freshPrice = 0;
+            const isCustomSqFt = freshProd.isCustomSizeEnabled && item.sqFt && item.sqFt !== '1' && item.sqFt !== 1;
+            
+            if (isCustomSqFt) {
+               freshPrice = userRole === 'dealer' ? parseNum(freshProd.pricePerSqFtDealer) : parseNum(freshProd.pricePerSqFtRetail);
+            }
+            if (!freshPrice || freshPrice <= 0) {
+               freshPrice = userRole === 'dealer' ? parseNum(freshProd.dealerPrice) : parseNum(freshProd.retailPrice);
+            }
             if (freshPrice <= 0) freshPrice = parseNum(freshProd.price);
 
             const variantItems = freshProd.variantItems || freshProd.variantPrices || [];
